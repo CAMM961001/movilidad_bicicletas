@@ -47,3 +47,10 @@ po/*~
 
 # RStudio Connect folder
 rsconnect/
+
+# Spatial data files
+*.cpg
+*.dbf
+*.prj
+*.shp
+*.shx
