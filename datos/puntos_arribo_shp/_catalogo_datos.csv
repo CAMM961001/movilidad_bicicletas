@@ -1,0 +1,9 @@
+campo,descripcion
+SISTEMA,Es el nombre del Sistema
+ID,Es el número consecutivo para identificar cada punto de arribo
+NOMBRE,Es el nombre relacionado con alguna referencia cercana a la ubicación del punto
+COLONIA,Es el nombre de la colonia en la que se encuentra el punto de arribo
+CALLE_PRIM,Es el nombre de la calle primaria donde se ubica el punto de arribo
+CALLE_SECU,Es el nombre de la calle secundaria donde se ubica el punto de arribo
+ALCALDIA,Es el nombre de la alcaldía
+geopoint,Son las coordenadas del punto de arribo

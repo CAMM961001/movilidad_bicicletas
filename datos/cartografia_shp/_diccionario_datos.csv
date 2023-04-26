@@ -1,0 +1,30 @@
+base,campo,descripcion
+estaciones,SISTEMA,Es el nombre del sistema de bicicletas públicas de la Ciudad de México
+estaciones,Num_Cicloe,Es el número de la estación
+estaciones,Nombre,Es el nombre de la estación
+estaciones,Calle_Prin,Es el nombre de la calle donde se encuentra ubicada la cicloestación
+estaciones,Calle_Secu,Es el nombre de la calle secundaria donde se encuentra ubicada la cicloestación
+estaciones,Colonia,Es el nombre de la colonia en la que se encuentra la cicloestación
+estaciones,Alcaldia,Es el nombre de la alcaldía
+estaciones,Tipo_CE,"Es el tipo de Cicloestación: 4G es cicloestación de 4a generación, Multimedial es cicloestación Multimedia  y  3G es de 3a Generación"
+estaciones,Candados,Es el número de anclajes/capacidad de la cicloestación
+estacionamientos,SISTEMA,"Es el tipo de biciestacionamiento: Masivo, Semimasivo"
+estacionamientos,NOMBRE,Es el nombre del Biciestacionamiento
+estacionamientos,UBICACION,Es la dirección donde se ubica el biciestacionamiento
+estacionamientos,COLONIA,Es el nombre de la colonia en la que se encuentra el biciestacionamiento
+estacionamientos,ALCALDIA,Es el nombre de la alcaldía
+estacionamientos,CP,Es el código postal
+estacionamientos,CAPACIDAD,Es el número de lugares con los que cuenta el biciestacionamiento
+estacionamientos,DISCAPACID,Es el número de lugares para personas con discapacidad con los que cuenta el biciestacionamiento
+estacionamientos,OPERACION,Es el estatus de actividad del biciestacionamiento
+ciclovias,ID_TRAMO,"Es el identificador del tramo de infraestructura ciclista, considerando vialidad, alcaldía, tipo de infraestructura ciclista, sentido y estado de servicio"
+ciclovias,ID_PROY,Es el identificador del proyecto al que pertenece el tramo de infraestructura ciclista
+ciclovias,NOMBRE,Es el nombre de la infraestructura ciclista
+ciclovias,TIPO_IC,"Es el tipo de infraestructura ciclista: carril bus bici, carril de prioridad ciclista, ciclocarril, ciclovía, ciclovía bidireccional, infraestructura ciclista emergente, sendero compartido"
+ciclovias,VIALIDAD,Es el nombre de la vialidad donde se encuentra la infraestructura ciclista
+ciclovias,TIPO_VIA,"Es el tipo de vialidad donde se encuentra la infraestructura ciclista: avenida principal, eje vial, secundaria, vía de acceso controlado"
+ciclovias,ESTADO,"Es el estatus de servicio que tiene el tramo dependiendo las condiciones de infraestructura: en operación, en construcción, fuera de servicio"
+ciclovias,INSTANCIA,"Es el organismo, institución o alcaldía que colabora para la implementación de la ciclovía: Gobierno central, Alcaldía o UNAM"
+ciclovias,A_HABILITA,Es el año en el que el tramo incia la operación 
+ciclovias,A_LICITA,"Es el año en el que se licitó la construcción del tramo, información disponible para tramos licitados entre 2019 y 2022 por el Gobierno Central"
+ciclovias,LONG_KM,Es la longitud estimada en kilómetros del tramo de ciclovía
