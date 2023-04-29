@@ -32,3 +32,5 @@ El análisis parte de cuatro conjuntos de datos principalmente, todos relacionad
 # Referencias
 
 * [Datos de infraestructura ciclista de la CDMX](https://datos.cdmx.gob.mx/dataset/infraestructura-vial-ciclista/resource/1cf94274-0bf6-4220-b959-8aa0ec68a326?inner_span=True)
+* [Datos del sistema de transporte colectivo Metro](https://datos.cdmx.gob.mx/dataset/lineas-y-estaciones-del-metro)
+* [Datos del Metrobús](https://datos.cdmx.gob.mx/dataset/geolocalizacion-metrobus)
