@@ -54,3 +54,7 @@ rsconnect/
 *.prj
 *.shp
 *.shx
+
+# Python files
+*.ipynb_checkpoints
+__pycache__
