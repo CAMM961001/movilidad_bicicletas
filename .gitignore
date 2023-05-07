@@ -54,6 +54,7 @@ rsconnect/
 *.prj
 *.shp
 *.shx
+datos/ecobici/*
 
 # Python files
 *.ipynb_checkpoints
