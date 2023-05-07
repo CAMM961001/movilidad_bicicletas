@@ -1,0 +1,12 @@
+numpy
+pandas
+matplotlib
+jupyterlab
+plotly
+cufflinks
+scipy
+scikit-learn
+termcolor
+statsmodels
+regex
+
