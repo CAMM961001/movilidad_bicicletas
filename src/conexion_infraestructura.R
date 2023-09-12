@@ -12,7 +12,6 @@ library(ggvoronoi)
 
 ROOT <- getwd()
 CARTOG_PATH <- paste0(ROOT, '/datos/cartografia_shp/')
-ARRIBO_PATH <- paste0(ROOT, '/datos/puntos_arribo_shp/')
 STCM_PATH <- paste0(ROOT, '/datos/stcmetro_shp/')
 MB_PATH <- paste0(ROOT, '/datos/mb_shp/')
 
@@ -21,16 +20,10 @@ MB_PATH <- paste0(ROOT, '/datos/mb_shp/')
 
 
 stations_shp <- readOGR(paste0(CARTOG_PATH, 'ECOBICI_Cicloestaciones.shp'))
-parking_shp <- readOGR(paste0(CARTOG_PATH, 'Biciestacionamientos.shp'))
-roads_shp <- readOGR(paste0(CARTOG_PATH, '7ma_Infraestructura_Vial_Ciclista_CDMX_01_23.shp'))
-arrival_shp <- readOGR(paste0(ARRIBO_PATH, 'puntos_de_arribo_sitis.shp'))
 metro_shp <- readOGR(paste0(STCM_PATH, 'STC_Metro_estaciones_utm14n.shp'))
 mb_shp <- readOGR(paste0(MB_PATH, 'Metrobus_estaciones_utm14n.shp'))
 
-target_proj <- parking_shp@proj4string@projargs
-stations_shp <- spTransform(stations_shp, target_proj)
-roads_shp <- spTransform(roads_shp, target_proj)
-arrival_shp <- spTransform(arrival_shp, target_proj)
+target_proj <- stations_shp@proj4string@projargs
 metro_shp <- spTransform(metro_shp, target_proj)
 mb_shp <- spTransform(mb_shp, target_proj)
 
@@ -60,6 +53,34 @@ evaluar_haversine <- function(coord_pair, spdf_){
 }
 
 
+eficiencia_cobertura <- function(df_, r){
+  # Función para evaluar la eficiencia de
+  # cobertura del conjunto de cámaras
+  #
+  # Parámetros
+  #     df_: Matriz distancias n_dels x n_cams
+  #     r: Radio de cobertura p/cámara
+  #
+  # Salidas
+  #     eficiencia: Eficiencia de cobertura
+  # -------------------------------------------
+  
+  # Evaluar delitos dentro de r
+  flag <- (df_ <= r)
+  
+  # Cámaras que captan cada delito (Sumar por fila)
+  flag <- rowSums(flag)
+  
+  # Delitos captados por al menos una cámara
+  flag <- sum(flag >= 1)
+  
+  # Métrica de eficiencia
+  eficiencia <- flag / nrow(df_)
+  
+  return(eficiencia)
+}
+
+
 get_dist_id <- function(col, type='min'){
   # Función para extraer el ID del objeto con
   # la menor distancia de referencia
@@ -83,37 +104,38 @@ get_dist_id <- function(col, type='min'){
 
 
 # =============================================================================
-# ========================= Biciestacionamientos ==============================
+# ======================= Distancias a otros servicios ========================
 # =============================================================================
 
 
 # ------------------------------------------------------ Matrices de distancias
 
 
-# ¿Qué estación del metro queda a menor distancia de cada estacionamiento?
+# ¿Qué estación del metro queda a menor distancia de cada estación?
 # Para resolverlo, se obtiene el ID de la estación de metro con min. dist.
 
-# Matriz de distancias con dimensiones n_stcm x n_prk
+# Matriz de distancias con dimensiones n_stcm x n_ecob
 # n_stcm: Número de estaciones de metro
-# n_prk: Número de biciestacionamientos
-dist_stcm_prk <- apply(
+# n_ecob: Número de estaciones de ecobici
+dist_stcm_ecob <- apply(
   X=metro_shp@coords
   ,MARGIN=1
   ,FUN=evaluar_haversine
-  ,spdf_=parking_shp@coords
+  ,spdf_=stations_shp@coords
 ) |>
   t() |>
   as_tibble(.name_repair = 'minimal')
 
-min_stcm <- unique(apply(dist_stcm_prk, 2, get_dist_id, type='min'))
+# Estaciones de metro más cercanas a una estación de ecobici
+min_stcm <- unique(apply(dist_stcm_ecob, 2, get_dist_id, type='min'))
 
 # Visualización de estaciones de metro
-mask_shp <- metro_shp[min_stcm,]
+mask_stcm <- metro_shp[min_stcm,]
 
-df_temp <- mask_shp@coords |> 
+df_temp <- mask_stcm@coords |> 
   as_tibble() |>
   rename(lon=coords.x1, lat=coords.x2) |>
-  cbind(mask_shp@data)
+  cbind(mask_stcm@data)
 
 # Estilo de marcadores
 icon_subway <- makeAwesomeIcon(
@@ -132,30 +154,32 @@ leaflet(data = df_temp) |>
   addTiles() |>
   addProviderTiles(providers$CartoDB.VoyagerLabelsUnder)
 
-# ¿Qué estación del metrobús queda a menor distancia de cada estacionamiento?
-# Mismo enfoque
+
+# ¿Qué estación del metrobús queda a menor distancia de cada estación?
+# Para resolverlo, se obtiene el ID de la estación de metro con min. dist.
 
 # Matriz de distancias con dimensiones n_stcm x n_prk
 # n_stcm: Número de estaciones de metro
 # n_prk: Número de biciestacionamientos
-dist_mb_prk <- apply(
+dist_mb_ecob <- apply(
   X=mb_shp@coords
   ,MARGIN=1
   ,FUN=evaluar_haversine
-  ,spdf_=parking_shp@coords
+  ,spdf_=stations_shp@coords
 ) |>
   t() |>
   as_tibble(.name_repair = 'minimal')
 
-min_mb <- unique(apply(dist_mb_prk, 2, get_dist_id, type='min'))
+# Estaciones de MB más cercanas a una estación de ecobici
+min_mb <- unique(apply(dist_mb_ecob, 2, get_dist_id, type='min'))
 
 # Visualización de estaciones de metro
-mask_shp <- mb_shp[min_mb,]
+mask_mb <- mb_shp[min_mb,]
 
-df_temp <- mask_shp@coords |> 
+df_temp <- mask_mb@coords |> 
   as_tibble() |>
   rename(lon=coords.x1, lat=coords.x2) |>
-  cbind(mask_shp@data)
+  cbind(mask_mb@data)
 
 # Estilo de marcadores
 icon_bus <- makeAwesomeIcon(
@@ -175,30 +199,46 @@ leaflet(data = df_temp) |>
   addProviderTiles(providers$CartoDB.VoyagerLabelsUnder)
 
 
-# ------------------------------------ Segmentación Voronoi de estacionamientos
+# ----------------------------------------------------- Eficiencia de cobertura
 
 
-esc_aux <- select(
-    data.frame(parking_shp@coords)
-    ,coords.x2
-    ,coords.x1) |>
-  unique()
+# ¿Cuál es la eficiencia de cobertura de las estaciones del metro a menos de 
+# 500 mts. de una estación de ecobici considerando aquellas estaciones en la
+# zona de cobertura de ecobici.
 
-#Partición Voronoi en ggplot() con las escuelas en la CDMX
-ggplot(data = esc_aux, aes(coords.x2, coords.x1)) +
-  stat_voronoi(geom="path") +
-  geom_point()
+# Matriz de distancias con dimensiones n_stcm x n_ecob
+# n_stcm: Número de estaciones de metro
+# n_ecob: Número de estaciones de ecobici
+dist_stcm_mask <- apply(
+  X=mask_stcm@coords
+  ,MARGIN=1
+  ,FUN=evaluar_haversine
+  ,spdf_=stations_shp@coords
+) |>
+  t() |>
+  as_tibble(.name_repair = 'minimal')
 
-#Nota que las líneas anteriores sólo son una gráfica en ggplot()
-
-#Para generar un objeto espacial de Voronoi puedes utilizar una funcion de ggvoronoi()
-vor_diag <- voronoi_polygon(
-  esc_aux
-  ,x="coords.x2"
-  ,y="coords.x1")
-vor_diag@proj4string@projargs <- target_proj
+# Eficiencia de cobertura de las estaciones del metro
+radio_cobertura <- 480
+eficiencia_stcm <- eficiencia_cobertura(dist_stcm_mask, radio_cobertura)
 
 
-# ------------------------------------------ Intersección Voronoi con STCM y MB
+# ¿Cuál es la eficiencia de cobertura de las estaciones del metrobús a menos de 
+# 500 mts. de una estación de ecobici considerando aquellas estaciones en la
+# zona de cobertura de ecobici.
 
+# Matriz de distancias con dimensiones n_stcm x n_ecob
+# n_stcm: Número de estaciones de metro
+# n_ecob: Número de estaciones de ecobici
+dist_mb_mask <- apply(
+  X=mask_mb@coords
+  ,MARGIN=1
+  ,FUN=evaluar_haversine
+  ,spdf_=stations_shp@coords
+) |>
+  t() |>
+  as_tibble(.name_repair = 'minimal')
+
+# Eficiencia de cobertura de las estaciones del metro
+eficiencia_mb <- eficiencia_cobertura(dist_mb_mask, radio_cobertura)
 
